@@ -1,0 +1,18 @@
+<header class="barra">
+  <a class="marca" routerLink="/disponibilidad" (click)="cerrarMenu()">⚽ Arena Sur <small>(Angular)</small></a>
+
+  <button type="button" class="hamburguesa" aria-label="Abrir menú" [attr.aria-expanded]="menuAbierto()" (click)="alternarMenu()">☰</button>
+
+  <nav class="menu" [class.abierto]="menuAbierto()" aria-label="Secciones" (click)="cerrarMenu()">
+    <a routerLink="/disponibilidad" routerLinkActive="activo">Disponibilidad</a>
+    <a routerLink="/mis-arriendos" routerLinkActive="activo">Mis arriendos</a>
+    <a routerLink="/admin/arriendos" routerLinkActive="activo">Admin · Arriendos</a>
+    <a routerLink="/admin/canchas" routerLinkActive="activo">Admin · Canchas</a>
+  </nav>
+</header>
+
+<main class="contenido">
+  <router-outlet />
+</main>
+
+<app-toast />

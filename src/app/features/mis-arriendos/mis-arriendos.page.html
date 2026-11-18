@@ -1,0 +1,54 @@
+<h1>Mis arriendos</h1>
+<p class="sub">Ingresa el email con el que arrendaste.</p>
+
+<form class="tarjeta filtros" [formGroup]="form" (ngSubmit)="buscar()" novalidate>
+  <div class="campo">
+    <label for="email">Tu email</label>
+    <input id="email" type="email" formControlName="email" autocomplete="email">
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <span class="error-campo">Ingresa un email válido</span>
+    }
+  </div>
+  <button type="submit">Buscar</button>
+</form>
+
+@if (error(); as mensaje) {
+  <p class="aviso error">{{ mensaje }}</p>
+} @else if (cargando()) {
+  <p class="vacia">Buscando…</p>
+} @else if (buscado() !== null) {
+  @if (arriendos().length === 0) {
+    <p class="aviso info">No hay arriendos para ese email.</p>
+  } @else {
+    <!-- En pantallas angostas el CSS convierte la tabla en tarjetas usando el atributo data-etiqueta -->
+    <table>
+      <thead>
+        <tr><th>N°</th><th>Fecha</th><th>Horario</th><th>Cancha</th><th>Precio</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        @for (a of arriendos(); track a.id) {
+          <tr>
+            <td data-etiqueta="N°">{{ a.id }}</td>
+            <td data-etiqueta="Fecha">{{ formatearFecha(a.fecha) }}</td>
+            <td data-etiqueta="Horario">{{ formatearHora(a.hora) }} – {{ formatearHora(a.horaFin) }}</td>
+            <td data-etiqueta="Cancha">{{ a.nombreCancha }}</td>
+            <td data-etiqueta="Precio">{{ formatearPrecio(a.precio) }}</td>
+            <td data-etiqueta="Estado">
+              <span class="chip" [class.ok]="a.estado === 'CONFIRMADO'" [class.error]="a.estado === 'CANCELADO'">
+                {{ a.estado === 'CONFIRMADO' ? 'Confirmado' : 'Cancelado' }}
+              </span>
+            </td>
+            <td class="acciones-celda">
+              @if (a.modificable) {
+                <div class="acciones">
+                  <a class="boton secundario" [routerLink]="['/editar', a.id]" [queryParams]="{ email: buscado() }">Modificar</a>
+                  <button type="button" class="peligro" (click)="cancelar(a)">Cancelar</button>
+                </div>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}

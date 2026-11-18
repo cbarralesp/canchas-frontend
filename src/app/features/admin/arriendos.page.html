@@ -1,0 +1,47 @@
+<h1>Arriendos</h1>
+<p class="sub">Revisa las reservas del recinto y cancela las que corresponda.</p>
+
+<div class="tarjeta filtros">
+  <div class="campo">
+    <label for="fecha">Filtrar por fecha</label>
+    <input #fechaInput type="date" id="fecha" [value]="fecha() ?? ''" (change)="filtrar(fechaInput.value)">
+  </div>
+  <button type="button" class="secundario" (click)="filtrar('')">Ver todos</button>
+</div>
+
+@if (error(); as mensaje) {
+  <p class="aviso error">{{ mensaje }}</p>
+} @else if (cargando()) {
+  <p class="vacia">Cargando…</p>
+} @else if (arriendos().length === 0) {
+  <p class="aviso info">No hay arriendos para mostrar.</p>
+} @else {
+  <table>
+    <thead>
+      <tr><th>N°</th><th>Fecha</th><th>Horario</th><th>Cancha</th><th>Cliente</th><th>Contacto</th><th>Precio</th><th>Estado</th><th></th></tr>
+    </thead>
+    <tbody>
+      @for (a of arriendos(); track a.id) {
+        <tr>
+          <td data-etiqueta="N°">{{ a.id }}</td>
+          <td data-etiqueta="Fecha">{{ formatearFecha(a.fecha) }}</td>
+          <td data-etiqueta="Horario">{{ formatearHora(a.hora) }} – {{ formatearHora(a.horaFin) }}</td>
+          <td data-etiqueta="Cancha">{{ a.nombreCancha }}</td>
+          <td data-etiqueta="Cliente">{{ a.nombreArrendatario }}</td>
+          <td data-etiqueta="Contacto">{{ a.email }} · {{ a.telefono }}</td>
+          <td data-etiqueta="Precio">{{ formatearPrecio(a.precio) }}</td>
+          <td data-etiqueta="Estado">
+            <span class="chip" [class.ok]="a.estado === 'CONFIRMADO'" [class.error]="a.estado === 'CANCELADO'">
+              {{ a.estado === 'CONFIRMADO' ? 'Confirmado' : 'Cancelado' }}
+            </span>
+          </td>
+          <td class="acciones-celda">
+            @if (a.estado === 'CONFIRMADO') {
+              <button type="button" class="peligro" (click)="cancelar(a)">Cancelar</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

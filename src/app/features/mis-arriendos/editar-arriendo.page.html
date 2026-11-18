@@ -1,0 +1,40 @@
+<h1>Modificar arriendo N° {{ id() }}</h1>
+<p class="sub">Cambia la cancha, la fecha o la hora. El precio se recalcula con la tarifa de la cancha elegida.</p>
+
+@if (error(); as mensaje) {
+  <p class="aviso error">{{ mensaje }}</p>
+}
+
+@if (arriendo()) {
+  <form class="tarjeta formulario" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <div class="campo">
+      <label for="canchaId">Cancha *</label>
+      <select id="canchaId" formControlName="canchaId">
+        @for (c of canchas(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nombre }} · {{ etiquetaDeporte(c.deporte) }} · {{ formatearPrecio(c.tarifaHora) }}</option>
+        }
+      </select>
+    </div>
+    <div class="campo">
+      <label for="fecha">Fecha *</label>
+      <input id="fecha" type="date" formControlName="fecha" [min]="fechaMinima">
+      @if (form.controls.fecha.touched && form.controls.fecha.invalid) {
+        <span class="error-campo">Elige una fecha</span>
+      }
+    </div>
+    <div class="campo">
+      <label for="hora">Hora de inicio *</label>
+      <select id="hora" formControlName="hora">
+        @for (h of horas; track h) {
+          <option [ngValue]="h">{{ formatearHora(h) }}</option>
+        }
+      </select>
+    </div>
+    <div class="acciones">
+      <button type="submit" [disabled]="enviando()">{{ enviando() ? 'Guardando…' : 'Guardar cambios' }}</button>
+      <a class="boton secundario" routerLink="/mis-arriendos" [queryParams]="{ email: email() }">Volver</a>
+    </div>
+  </form>
+} @else if (!error()) {
+  <p class="vacia">Cargando…</p>
+}

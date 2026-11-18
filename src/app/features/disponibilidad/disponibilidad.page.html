@@ -1,0 +1,52 @@
+<h1>¿Cuándo quieres jugar?</h1>
+<p class="sub">Elige una fecha y toca un horario libre para arrendar.</p>
+
+<div class="tarjeta filtros">
+  <div class="campo">
+    <label for="fecha">Fecha</label>
+    <input #fechaInput type="date" id="fecha" [value]="fecha()" [min]="fechaMinima"
+           (change)="cambiarFecha(fechaInput.value)">
+  </div>
+</div>
+
+@if (clima(); as c) {
+  <p class="aviso info">
+    <b>Pronóstico del {{ formatearFecha(c.fecha) }}:</b> máxima {{ c.temperaturaMaxima }} °C ·
+    probabilidad de lluvia {{ c.probabilidadLluvia }} %.
+  </p>
+} @else if (clima() === null) {
+  <p class="aviso info">Pronóstico no disponible por ahora.</p>
+}
+
+@if (error(); as mensaje) {
+  <p class="aviso error">{{ mensaje }}</p>
+} @else if (cargando()) {
+  <p class="vacia">Cargando disponibilidad…</p>
+} @else if (canchas().length === 0) {
+  <p class="aviso info">No hay canchas en servicio.</p>
+}
+
+@for (item of canchas(); track item.cancha.id) {
+  <article class="tarjeta">
+    <h3>{{ item.cancha.nombre }}</h3>
+    <p class="meta">
+      {{ etiquetaDeporte(item.cancha.deporte) }} ·
+      <span class="precio">{{ formatearPrecio(item.cancha.tarifaHora) }}/hora</span>
+    </p>
+    <div class="horas">
+      @for (h of horas; track h) {
+        @if (item.horasLibres.includes(h)) {
+          <a class="hora" routerLink="/arrendar" [queryParams]="{ canchaId: item.cancha.id, fecha: fecha(), hora: h }">
+            {{ formatearHora(h) }}
+            <small>libre</small>
+          </a>
+        } @else {
+          <span class="hora ocupada">
+            {{ formatearHora(h) }}
+            <small>no disponible</small>
+          </span>
+        }
+      }
+    </div>
+  </article>
+}

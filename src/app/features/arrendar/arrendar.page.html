@@ -1,0 +1,45 @@
+@if (cancha(); as c) {
+  <h1>Arrendar {{ c.nombre }}</h1>
+  <section class="tarjeta">
+    <h3>{{ formatearFecha(fecha()!) }} · {{ formatearHora(+hora()!) }} a {{ formatearHora(+hora()! + 1) }}</h3>
+    <p class="meta">{{ etiquetaDeporte(c.deporte) }}</p>
+    <p class="resumen">Total: {{ formatearPrecio(c.tarifaHora) }}</p>
+  </section>
+
+  @if (error(); as mensaje) {
+    <p class="aviso error">{{ mensaje }}</p>
+  }
+
+  <form class="tarjeta formulario" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    <div class="campo">
+      <label for="nombre">Nombre completo *</label>
+      <input id="nombre" type="text" formControlName="nombre" autocomplete="name">
+      @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+        <span class="error-campo">El nombre es obligatorio (máximo 80 caracteres)</span>
+      }
+    </div>
+    <div class="campo">
+      <label for="email">Email *</label>
+      <input id="email" type="email" formControlName="email" autocomplete="email">
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <span class="error-campo">Ingresa un email válido</span>
+      }
+    </div>
+    <div class="campo">
+      <label for="telefono">Teléfono *</label>
+      <input id="telefono" type="tel" formControlName="telefono" autocomplete="tel">
+      @if (form.controls.telefono.touched && form.controls.telefono.invalid) {
+        <span class="error-campo">El teléfono debe tener entre 8 y 12 dígitos (puede partir con +)</span>
+      }
+    </div>
+    <div class="acciones">
+      <button type="submit" [disabled]="enviando()">{{ enviando() ? 'Enviando…' : 'Confirmar arriendo' }}</button>
+      <a class="boton secundario" routerLink="/disponibilidad">Volver</a>
+    </div>
+  </form>
+} @else if (error(); as mensaje) {
+  <p class="aviso error">{{ mensaje }}</p>
+  <a class="boton secundario" routerLink="/disponibilidad">Volver a Disponibilidad</a>
+} @else {
+  <p class="vacia">Cargando…</p>
+}

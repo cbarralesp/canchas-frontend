@@ -1,0 +1,61 @@
+<h1>Canchas</h1>
+<p class="sub">Las canchas no se borran: se desactivan para conservar el historial de arriendos.</p>
+
+<table>
+  <thead><tr><th>Nombre</th><th>Deporte</th><th>Tarifa/hora</th><th>Estado</th><th></th></tr></thead>
+  <tbody>
+    @for (c of canchas(); track c.id) {
+      <tr>
+        <td data-etiqueta="Nombre"><b>{{ c.nombre }}</b></td>
+        <td data-etiqueta="Deporte">{{ etiquetaDeporte(c.deporte) }}</td>
+        <td data-etiqueta="Tarifa/hora">{{ formatearPrecio(c.tarifaHora) }}</td>
+        <td data-etiqueta="Estado">
+          <span class="chip" [class.ok]="c.activa" [class.error]="!c.activa">{{ c.activa ? 'Activa' : 'Inactiva' }}</span>
+        </td>
+        <td class="acciones-celda">
+          <div class="acciones">
+            <button type="button" class="secundario" (click)="editar(c)">Editar</button>
+            <button type="button" class="secundario" (click)="alternarEstado(c)">{{ c.activa ? 'Desactivar' : 'Activar' }}</button>
+          </div>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<h2>{{ editandoId() === null ? 'Nueva cancha' : 'Editar cancha' }}</h2>
+
+@if (error(); as mensaje) {
+  <p class="aviso error">{{ mensaje }}</p>
+}
+
+<form class="tarjeta formulario" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+  <div class="campo">
+    <label for="nombre">Nombre *</label>
+    <input id="nombre" type="text" formControlName="nombre">
+    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+      <span class="error-campo">El nombre es obligatorio (máximo 60 caracteres)</span>
+    }
+  </div>
+  <div class="campo">
+    <label for="deporte">Deporte *</label>
+    <select id="deporte" formControlName="deporte">
+      @for (d of deportes; track d.valor) {
+        <option [value]="d.valor">{{ d.etiqueta }}</option>
+      }
+    </select>
+  </div>
+  <div class="campo">
+    <label for="tarifaHora">Tarifa por hora * ($5.000 – $100.000)</label>
+    <input id="tarifaHora" type="number" formControlName="tarifaHora" min="5000" max="100000" step="500">
+    @if (form.controls.tarifaHora.touched && form.controls.tarifaHora.invalid) {
+      <span class="error-campo">La tarifa debe estar entre $5.000 y $100.000</span>
+    }
+  </div>
+  <div class="acciones">
+    <button type="submit">{{ editandoId() === null ? 'Crear cancha' : 'Guardar cambios' }}</button>
+    @if (editandoId() !== null) {
+      <button type="button" class="secundario" (click)="cancelarEdicion()">Cancelar edición</button>
+    }
+  </div>
+</form>
